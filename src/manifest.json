@@ -1,0 +1,22 @@
+{
+    "name": "Chromeage",
+    "description": "Converts image and GIF links into actual images in Google Hangout",
+    "version": "1.0",
+    "author": "Tibor Botos",
+    "permissions": [
+        "activeTab"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["lib/jquery.min.js", "content.js"],
+            "all_frames": true
+        }
+    ],
+
+    "icons": {
+        "128": "assets/icon.png"
+    },
+
+    "manifest_version": 2
+}
