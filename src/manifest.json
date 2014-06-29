@@ -1,7 +1,7 @@
 {
     "name": "Chromeage",
-    "description": "Converts image and GIF links into actual images in Google Hangout",
-    "version": "1.0",
+    "description": "Chrome extension for Google Hangouts which converts image links into actual images",
+    "version": "1.0.1",
     "author": "Tibor Botos",
     "permissions": [
         "activeTab"

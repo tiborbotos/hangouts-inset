@@ -1,9 +1,13 @@
+// Copyright (c) 2014 Tibor Botos - https://github.com/tiborbotos
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file. 
+
 if (window.location.toString().indexOf('https://talkgadget.google.com/u/0/talkgadget') == 0) {
     chromage(jQuery);
 }
 
 function chromage($) {
-    console.log('Execute Chromage! on ' + window.location);
+    //console.log('Execute Chromage! on ' + window.location); // needed only for debugging
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
     function checkGtalkContainer() {
@@ -11,6 +15,13 @@ function chromage($) {
         console.log('Found ' + gtalkMessageDivs.length + ' elements!');
     }
 
+	function convertToImageLater(node) {
+		setTimeout(function () {
+			var url = node.text();
+			node.html('<a href="' + url + '"><img src="' + url + '" style="width: 100%" /></a> ')
+		}, 1000); // timeout needed because of http from https is not allowed
+	}
+	
     var observer = new MutationObserver(function(mutations, observer) {
         $.each(mutations, function (index, item){
             if (item.addedNodes && item.addedNodes.length === 1) {
@@ -51,6 +62,7 @@ function chromage($) {
     });
 };
 
+// Utilities
 function waitFor(selector) {
     var deferred = new jQuery.Deferred();
     var tries = 0;
@@ -71,16 +83,11 @@ function waitFor(selector) {
 }
 
 function validImage(url) {
-    if ((url.indexOf('http://') == 0 || url.indexOf('https://') == 0) &&
-        (url.indexOf('jpg') > -1 || url.indexOf('jpeg') > -1 || url.indexOf('png') > -1 || url.indexOf('gif') > -1))
+    if ((url.indexOf('http://') == 0 || url.indexOf('https://') == 0) && // protocol
+		(url.indexOf('.googleusercontent.com/') == -1) && // exclude g+
+        (url.indexOf('jpg') > -1 || url.indexOf('jpeg') > -1 || url.indexOf('png') > -1 || url.indexOf('gif') > -1) // file format
+		)
         return true;
     else
         return false;
-}
-
-function convertToImageLater(node) {
-    setTimeout(function () {
-        var url = node.text();
-        node.html('<a href="' + url + '"><img src="' + url + '" style="width: 100%" /></a> ')
-    }, 1000); // timeout needed because of http from https is not allowed
 }
