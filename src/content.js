@@ -10,18 +10,40 @@ function chromage($) {
     //console.log('Execute Chromage! on ' + window.location); // needed only for debugging
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
+    var chatContainer;
+
     function checkGtalkContainer() {
         var gtalkMessageDivs = $('div.tk:not[data-chromage-processed]');
         console.log('Found ' + gtalkMessageDivs.length + ' elements!');
     }
 
+    /**
+     * Converts the link within the node to an image
+     */
 	function convertToImageLater(node) {
 		setTimeout(function () {
 			var url = node.text();
-			node.html('<a href="' + url + '"><img src="' + url + '" style="width: 100%" /></a> ')
+			node.html('<a title="' + url + '" href="' + url + '"><img src="' + url + '" style="width: 100%" /></a> ');
+
+//			$(chatContainer).animate({
+//                scrollTop: $(node).offset().bottom
+//            }, 100);
 		}, 1000); // timeout needed because of http from https is not allowed
 	}
-	
+
+    waitFor('body>div>div').done(function () {
+        chatContainer = $('div.tk').parent();
+        if (chatContainer.length === 1) {
+            observer.observe(chatContainer[0], {
+                childList: true,
+                attributes: false,
+                subtree: true
+            });
+        }
+    }).fail(function () {
+        console.log('Failed to resolve chat container!');
+    });
+
     var observer = new MutationObserver(function(mutations, observer) {
         $.each(mutations, function (index, item){
             if (item.addedNodes && item.addedNodes.length === 1) {
@@ -48,18 +70,6 @@ function chromage($) {
         // ...
     });
 
-    waitFor('body>div>div').done(function () {
-        var chatContainer = $('div.tk').parent();
-        if (chatContainer.length === 1) {
-            observer.observe(chatContainer[0], {
-                childList: true,
-                attributes: false,
-                subtree: true
-            });
-        }
-    }).fail(function () {
-        console.log('Failed to resolve chat container!');
-    });
 };
 
 // Utilities
