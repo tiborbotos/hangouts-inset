@@ -3,13 +3,12 @@
 // found in the LICENSE file. 
 
 if (window.location.toString().indexOf('https://talkgadget.google.com/u/0/talkgadget') == 0) {
-    chromage(jQuery);
+    hangoutsInset(jQuery);
 }
 
-function chromage($) {
-    //console.log('Execute Chromage! on ' + window.location); // needed only for debugging
-    MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+function hangoutsInset($) {
 
+    MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     var chatContainer;
 
     function checkGtalkContainer() {
@@ -31,7 +30,7 @@ function chromage($) {
 		}, 1000); // timeout needed because of http from https is not allowed
 	}
 
-    waitFor('body>div>div').done(function () {
+    function initializeObserver() {
         chatContainer = $('div.tk').parent();
         if (chatContainer.length === 1) {
             observer.observe(chatContainer[0], {
@@ -39,39 +38,60 @@ function chromage($) {
                 attributes: false,
                 subtree: true
             });
+
+            chatContainer.children().each(function(index, item) {
+                var messages = findMessage(item);
+                if (typeof messages !== 'undefined') {
+                    createInsetFromMessage(messages);
+                }
+            });
         } else {
             console.log('Chat container cannot be parsed!');
         }
-    }).fail(function () {
-        console.log('Failed to resolve chat container!');
-    });
+    }
 
-    var observer = new MutationObserver(function(mutations, observer) {
+    function initializeObserverFailed() {
+        console.log('Failed to resolve chat container!');
+    }
+
+    function findMessage(node) {
+        var message = $(node).find('div>div>div>div>div+div:not([class])');
+        if (message.length == 0) {
+            message = $(node).find('div+div:not([class])');
+        }
+        return (message.length > 0) ?  message : undefined;
+    }
+
+    function createInsetFromMessage(messages) {
+        $.each(messages, function (index, element) {
+            var message = $(element);
+            message.addClass('inset-processed');
+            console.log('Message: ' + message.text(), message);
+
+            if (message.children() &&
+                message.children().length === 1 &&
+                $(message.children()[0]).prop('tagName') === 'A' &&
+                validImageUrl(message.text())) {
+
+                convertToImageLater(message);
+            }
+        });
+    }
+
+    function mutationObserverHandler(mutations, observer) {
         $.each(mutations, function (index, item){
             if (item.addedNodes && item.addedNodes.length === 1) {
                 var node = item.addedNodes[0];
-                var message = $(node).find('div>div>div>div>div+div:not([class])');
-                if (message.length == 0) {
-                    message = $(node).find('div+div:not([class])');
-                }
-                if (message.length > 0) {
-                    $(message[0]).addClass('chromaged');
-                    console.log('Message: ' + message.text(), message);
-
-                    if (message.children() &&
-                        message.children().length === 1 &&
-                        $(message.children()[0]).prop('tagName') === 'A' &&
-                        validImage(message.text())) {
-
-                        convertToImageLater(message);
-                    }
+                var messages = findMessage(node);
+                if (typeof messages !== 'undefined') {
+                    createInsetFromMessage(messages);
                 }
             }
-
         });
-        // ...
-    });
+    }
 
+    waitFor('body>div>div').done(initializeObserver).fail(initializeObserverFailed);
+    var observer = new MutationObserver(mutationObserverHandler);
 };
 
 // Utilities
@@ -94,7 +114,7 @@ function waitFor(selector) {
     return deferred.promise();
 }
 
-function validImage(url) {
+function validImageUrl(url) {
     if ((url.indexOf('http://') == 0 || url.indexOf('https://') == 0) && // protocol
 		(url.indexOf('.googleusercontent.com/') == -1) && // exclude g+
         (url.indexOf('jpg') > -1 || url.indexOf('jpeg') > -1 || url.indexOf('png') > -1 || url.indexOf('gif') > -1) // file format

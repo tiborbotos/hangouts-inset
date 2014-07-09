@@ -1,4 +1,4 @@
-Hangout Chromage
+Hangouts Inset
 ========
 
 Chrome extension for Google Hangouts which converts image links into actual images.
@@ -11,10 +11,10 @@ That's the goal. I hate clicking.
 
 ## How should I install it?
 * You need to use Google Chrome
-* Download the extension ([here](https://github.com/tiborbotos/chromage/raw/master/extension/chromage-1.0.1.crx))
+* Download the extension ([here](https://github.com/tiborbotos/hangouts-inset/raw/master/extension/hangouts-inset-1.1.0.crx))
 * Open google chrome's extension [tab](chrome://extensions/)
 * Install the downloaded file
 
 ## Any plans with it?
-Yes, all kind of smart stuff, like pre-loading facebook images if someone sends link from there, or pretty much everything what should google do with the smart link resolvation (like youtube or google+ content).
+Yes, all kind of smart stuff, like pre-loading main image from a website if someone sends a link, or pretty much everything what should google do with the smart link resolvation (like youtube or google+ content).
 
