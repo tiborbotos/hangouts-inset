@@ -25,9 +25,9 @@ function chromage($) {
 			var url = node.text();
 			node.html('<a title="' + url + '" href="' + url + '"><img src="' + url + '" style="width: 100%" /></a> ');
 
-//			$(chatContainer).animate({
-//                scrollTop: $(node).offset().bottom
-//            }, 100);
+            setTimeout(function () {
+                chatContainer.parent().parent().scrollTop(100000000000000000);
+            }, 250);
 		}, 1000); // timeout needed because of http from https is not allowed
 	}
 
@@ -39,6 +39,8 @@ function chromage($) {
                 attributes: false,
                 subtree: true
             });
+        } else {
+            console.log('Chat container cannot be parsed!');
         }
     }).fail(function () {
         console.log('Failed to resolve chat container!');
