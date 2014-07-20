@@ -47,6 +47,7 @@ function hangoutsInset($) {
             });
         } else {
             console.log('Chat container cannot be parsed!');
+            throw new Error('Chat container cannot be parsed at ' + window.location.toString());
         }
     }
 
